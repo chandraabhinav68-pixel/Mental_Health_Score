@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f7fb" />
+  <title>MindTrack | Student Wellbeing Check-in</title>
+  <style>
+    :root {
+      --ink: #17253d;
+      --muted: #68758b;
+      --line: #e3e9f1;
+      --blue: #3978f6;
+      --blue-dark: #235fda;
+      --mint: #dff7ee;
+      --page: #f4f7fb;
+      --white: #fff;
+      --shadow: 0 22px 60px rgba(40, 61, 99, .10);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: radial-gradient(ellipse at 90% 3%, #e4efff 0, transparent 34%), var(--page);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .shell { width: min(1080px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 54px; }
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:800; letter-spacing:-.4px; }
+    .brand-mark { width:38px; height:38px; display:grid; place-items:center; border-radius:13px; color:white; background:linear-gradient(145deg,#4c8bff,#2864e6); box-shadow:0 8px 18px #3978f64a; }
+    .brand-mark svg { width:22px; }
+    .header-note { color:var(--muted); font-size:13px; }
+    .hero { text-align:center; max-width:730px; margin:0 auto 27px; }
+    .eyebrow { display:inline-flex; align-items:center; gap:7px; padding:7px 11px; border:1px solid #dce8fb; border-radius:999px; background:#ffffffb8; color:#356bd0; font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .eyebrow span { width:7px;height:7px;border-radius:50%;background:#42bd8b;box-shadow:0 0 0 4px #42bd8b20; }
+    h1 { margin:15px 0 10px; font-size:clamp(30px,5vw,46px); line-height:1.1; letter-spacing:-1.8px; }
+    .hero p { margin:0 auto; color:var(--muted); font-size:16px; line-height:1.65; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:22px; align-items:start; }
+    .card { background:var(--white); border:1px solid #e8edf4; border-radius:20px; box-shadow:var(--shadow); }
+    .form-card { padding:28px; }
+    .section-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:23px; }
+    .section-head h2 { font-size:19px; margin:0 0 5px; letter-spacing:-.4px; }
+    .section-head p { color:var(--muted); font-size:13px; margin:0; }
+    .step { flex:none; background:#edf4ff; color:#3978e8; padding:7px 10px; border-radius:9px; font-weight:700; font-size:12px; }
+    .group-title { display:flex; align-items:center; gap:9px; font-size:13px; font-weight:800; color:#34435d; margin:24px 0 14px; }
+    .group-title:first-of-type { margin-top:0; }
+    .group-title::after { content:""; height:1px; background:var(--line); flex:1; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 14px; }
+    .field { min-width:0; }
+    label { display:block; margin-bottom:7px; color:#35435a; font-size:12px; font-weight:700; }
+    .optional { color:#98a2b2; font-weight:500; }
+    input, select { width:100%; min-height:45px; border:1px solid #dce3ed; border-radius:10px; padding:0 12px; background:#fff; color:var(--ink); font:inherit; font-size:14px; outline:none; transition:border .18s, box-shadow .18s; }
+    input::placeholder { color:#a0aaba; }
+    input:focus, select:focus { border-color:#75a2fa; box-shadow:0 0 0 3px #3978f619; }
+    input:invalid:not(:placeholder-shown) { border-color:#e78a8a; }
+    .hint { font-size:11px; color:#8995a7; margin:5px 0 0; }
+    .actions { display:flex; align-items:center; gap:14px; margin-top:25px; }
+    button { border:0; cursor:pointer; font:inherit; }
+    .submit { display:flex; align-items:center; justify-content:center; gap:10px; min-height:49px; padding:0 22px; border-radius:11px; background:var(--blue); color:#fff; font-size:14px; font-weight:750; box-shadow:0 9px 18px #3978f633; transition:background .2s, transform .2s; }
+    .submit:hover { background:var(--blue-dark); transform:translateY(-1px); }
+    .submit:disabled { opacity:.72; cursor:wait; transform:none; }
+    .spinner { width:17px;height:17px;border:2px solid #ffffff70;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none; }
+    .submit.loading .spinner { display:block; }
+    .submit.loading .button-text { opacity:.9; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .privacy { color:#8995a7; font-size:11px; line-height:1.5; }
+    aside { display:grid; gap:16px; }
+    .aside-card { padding:21px; }
+    .aside-card h3 { margin:0 0 9px; font-size:15px; }
+    .aside-card p { color:var(--muted); margin:0; font-size:13px; line-height:1.65; }
+    .icon-box { width:38px;height:38px;border-radius:12px;background:#edf4ff;color:#3978e8;display:grid;place-items:center;margin-bottom:15px;font-size:18px; }
+    .result { padding:21px; display:none; animation:rise .35s ease both; }
+    .result.show { display:block; }
+    @keyframes rise { from {opacity:0;transform:translateY(8px)} to {opacity:1;transform:translateY(0)} }
+    .result-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .result h3 { margin:0; font-size:15px; }
+    .result-badge { color:#16815b;background:#e1f7ed;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:700; }
+    .score { display:flex; align-items:baseline; gap:7px; margin:3px 0 9px; }
+    .score strong { font-size:48px; letter-spacing:-2px; line-height:1; color:#2d6fe9; }
+    .score span { font-size:13px;color:var(--muted); }
+    .result-caption { color:var(--muted); font-size:12px; line-height:1.6; margin:0; }
+    .error { display:none; margin-top:16px; padding:12px 14px; background:#fff0f0; border:1px solid #f5d1d1; color:#a33333; border-radius:10px; font-size:13px; line-height:1.5; }
+    .error.show { display:block; }
+    .disclaimer { border-left:3px solid #f0c16a; background:#fffaf0; border-radius:8px; padding:12px 13px; color:#7b6640; font-size:11px; line-height:1.55; }
+    footer { text-align:center; margin-top:22px; color:#8b96a6; font-size:11px; }
+    @media (max-width:800px) { .layout { grid-template-columns:1fr; } aside { grid-template-columns:repeat(2,minmax(0,1fr)); } .result, .disclaimer { grid-column:span 2; } }
+    @media (max-width:560px) { .shell { width:min(100% - 22px, 520px); padding-top:18px; } header { margin-bottom:24px; } .header-note { display:none; } .hero { margin-bottom:21px; } .hero p { font-size:14px; } .form-card { padding:20px 16px; border-radius:16px; } .grid { grid-template-columns:1fr; gap:14px; } .section-head { margin-bottom:19px; } aside { grid-template-columns:1fr; } .result,.disclaimer { grid-column:auto; } .actions { align-items:stretch; flex-direction:column; } .submit { width:100%; } .privacy { text-align:center; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7.5-4.4-7.5-10.1A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.5C19.5 15.6 12 20 12 20Z" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 12h2.4l1.3-2.2 2 4.4 1.2-2.2h2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>MindTrack</div>
+      <div class="header-note">Student wellbeing check-in</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow"><span></span> A moment for your wellbeing</div>
+      <h1>Understand your digital wellbeing</h1>
+      <p>Share a few details about your habits and routine. Your responses will be used to generate a model based prediction.</p>
+    </section>
+
+    <main class="layout">
+      <section class="card form-card">
+        <div class="section-head">
+          <div><h2>Your check-in</h2><p>Complete each field to get your prediction.</p></div>
+          <div class="step">12 questions</div>
+        </div>
+        <form id="student-form">
+          <div class="group-title">About you</div>
+          <div class="grid">
+            <div class="field"><label for="age">Age</label><input id="age" name="age" type="number" min="10" max="100" placeholder="e.g. 21" required /></div>
+            <div class="field"><label for="gender">Gender</label><select id="gender" name="gender" required><option value="" disabled selected>Select gender</option><option>Male</option><option>Female</option></select></div>
+            <div class="field"><label for="country">Country</label><input id="country" name="country" list="country-options" placeholder="e.g. India" required /><datalist id="country-options"><option>India</option><option>USA</option><option>Canada</option><option>Australia</option><option>UK</option><option>Germany</option><option>Mexico</option><option>Turkey</option><option>France</option><option>Other</option></datalist></div>
+            <div class="field"><label for="academic_level">Academic level</label><select id="academic_level" name="academic_level" required><option value="" disabled selected>Select level</option><option>High School</option><option>Undergraduate</option><option>Graduate</option></select></div>
+          </div>
+
+          <div class="group-title">Social media habits</div>
+          <div class="grid">
+            <div class="field"><label for="most_used_platform">Most used platform</label><select id="most_used_platform" name="most_used_platform" required><option value="" disabled selected>Select a platform</option><option>Facebook</option><option>LinkedIn</option><option>Instagram</option><option>Snapchat</option><option>Twitter</option><option>YouTube</option><option>TikTok</option><option>LINE</option><option>KakaoTalk</option><option>VKontakte</option><option>WhatsApp</option><option>WeChat</option></select></div>
+            <div class="field"><label for="purpose_of_use">Main purpose</label><select id="purpose_of_use" name="purpose_of_use" required><option value="" disabled selected>Select purpose</option><option>Networking</option><option>Education</option><option>Entertainment</option><option>News</option></select></div>
+            <div class="field"><label for="avg_daily_usage_hours">Average daily usage <span class="optional">(hours)</span></label><input id="avg_daily_usage_hours" name="avg_daily_usage_hours" type="number" min="0" max="24" step="0.1" placeholder="e.g. 4.5" required /></div>
+            <div class="field"><label for="daily_unlocks">Daily phone unlocks</label><input id="daily_unlocks" name="daily_unlocks" type="number" min="0" step="1" placeholder="e.g. 45" required /></div>
+          </div>
+
+          <div class="group-title">Daily routine</div>
+          <div class="grid">
+            <div class="field"><label for="study_hours">Study time <span class="optional">(hours/day)</span></label><input id="study_hours" name="study_hours" type="number" min="0" max="24" step="0.1" placeholder="e.g. 5" required /></div>
+            <div class="field"><label for="physical_activity_hours">Physical activity <span class="optional">(hours/day)</span></label><input id="physical_activity_hours" name="physical_activity_hours" type="number" min="0" max="24" step="0.1" placeholder="e.g. 1" required /></div>
+            <div class="field"><label for="sleep_hours_per_night">Sleep <span class="optional">(hours/night)</span></label><input id="sleep_hours_per_night" name="sleep_hours_per_night" type="number" min="0" max="24" step="0.1" placeholder="e.g. 7.5" required /></div>
+            <div class="field"><label for="stress_level">Current stress level</label><select id="stress_level" name="stress_level" required><option value="" disabled selected>Select level</option><option>Low</option><option>Medium</option><option>High</option><option>Very High</option></select></div>
+          </div>
+          <div class="error" id="error-message" role="alert"></div>
+          <div class="actions">
+            <button class="submit" id="submit-button" type="submit"><span class="spinner" aria-hidden="true"></span><span class="button-text">Get my prediction <span aria-hidden="true">→</span></span></button>
+            <div class="privacy">Your answers are sent to the prediction API running on your computer.</div>
+          </div>
+        </form>
+      </section>
+
+      <aside>
+        <section class="card aside-card">
+          <div class="icon-box" aria-hidden="true">✦</div>
+          <h3>A little more awareness</h3>
+          <p>Noticing the balance between screen time, rest, study and movement can be a helpful first step.</p>
+        </section>
+        <section class="card result" id="result-card" aria-live="polite">
+          <div class="result-top"><h3>Your prediction</h3><span class="result-badge">Complete</span></div>
+          <div class="score"><strong id="score-value">—</strong><span>predicted score</span></div>
+          <p class="result-caption">This is the score returned by your machine learning model.</p>
+        </section>
+        <div class="disclaimer">This model output is for educational purposes and is not a medical assessment or diagnosis.</div>
+      </aside>
+    </main>
+    <footer>MindTrack · Student wellbeing check-in</footer>
+  </div>
+  <script>
+    const API_URL = "http://127.0.0.1:8000/predict";
+    const form = document.getElementById("student-form");
+    const button = document.getElementById("submit-button");
+    const errorBox = document.getElementById("error-message");
+    const resultCard = document.getElementById("result-card");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorBox.classList.remove("show");
+      resultCard.classList.remove("show");
+
+      const formData = new FormData(form);
+      const payload = {
+        age: Number(formData.get("age")),
+        gender: formData.get("gender"),
+        country: formData.get("country").trim(),
+        academic_level: formData.get("academic_level"),
+        most_used_platform: formData.get("most_used_platform"),
+        purpose_of_use: formData.get("purpose_of_use"),
+        avg_daily_usage_hours: Number(formData.get("avg_daily_usage_hours")),
+        daily_unlocks: Number(formData.get("daily_unlocks")),
+        study_hours: Number(formData.get("study_hours")),
+        physical_activity_hours: Number(formData.get("physical_activity_hours")),
+        sleep_hours_per_night: Number(formData.get("sleep_hours_per_night")),
+        stress_level: formData.get("stress_level")
+      };
+
+      button.disabled = true;
+      button.classList.add("loading");
+      button.querySelector(".button-text").textContent = "Calculating your result…";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const detail = Array.isArray(body.detail)
+            ? body.detail.map(item => `${item.loc?.slice(1).join(" → ") || "Field"}: ${item.msg}`).join("; ")
+            : body.detail || `Request failed (${response.status})`;
+          throw new Error(detail);
+        }
+        const score = body.predicted_mental_health_score;
+        if (typeof score !== "number") throw new Error("The API response did not include predicted_mental_health_score.");
+        document.getElementById("score-value").textContent = score.toFixed(2);
+        resultCard.classList.add("show");
+        resultCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (error) {
+        errorBox.textContent = error.message.includes("Failed to fetch")
+          ? "Could not reach the API. Make sure your FastAPI server is running at http://127.0.0.1:8000 and CORS is enabled."
+          : error.message;
+        errorBox.classList.add("show");
+      } finally {
+        button.disabled = false;
+        button.classList.remove("loading");
+        button.querySelector(".button-text").innerHTML = 'Get my prediction <span aria-hidden="true">→</span>';
+      }
+    });
+  </script>
+</body>
+</html>
